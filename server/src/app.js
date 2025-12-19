@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 app.get("/health", (req, res) => {
-  res.json({ status: "OK", service: "Matrimonial Backend" });
+  res.json({ status: "OK", service: "Matrimonial Site Backend" });
 });
 
 module.exports = app;
