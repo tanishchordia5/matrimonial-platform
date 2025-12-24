@@ -30,5 +30,8 @@ const interestRoutes = require("./modules/interests/interest.routes");
 
 app.use("/api/interest", interestRoutes);
 
+const chatRoutes = require("./modules/chat/chat.routes");
+app.use("/api/chat", chatRoutes);
+
 
 module.exports = app;
