@@ -5,5 +5,6 @@ const auth = require("../../middlewares/auth.middleware");
 
 router.post("/", auth, controller.createOrUpdateProfile);
 router.get("/me", auth, controller.getMyProfile);
+router.get("/:userId", auth, controller.viewProfile);
 
 module.exports = router;

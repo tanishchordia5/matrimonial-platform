@@ -1,4 +1,6 @@
 const Profile = require("./profile.model");
+const { getRelationshipStatus } = require("../../utils/relationship.util");
+const { applyPrivacyRules } = require("../../utils/profilePrivacy.util");
 
 const createOrUpdateProfile = async (req, res) => {
   try {
@@ -19,4 +21,32 @@ const getMyProfile = async (req, res) => {
   res.json(profile);
 };
 
-module.exports = { createOrUpdateProfile, getMyProfile };
+const viewProfile = async (req, res) => {
+  const viewerId = req.user.userId;
+  const profileUserId = req.params.userId;
+
+
+
+  const profile = await Profile.findOne({ userId: profileUserId });
+
+  if (!profile) {
+    return res.status(404).json({ message: "Profile not found" });
+  }
+
+  if (viewerId !== profileUserId) {
+    await Profile.updateOne(
+      { userId: profileUserId },
+      { $inc: { "analytics.profileViews": 1 } }
+    );
+  }
+  const relationship = await getRelationshipStatus(viewerId, profileUserId);
+
+  const safeProfile = applyPrivacyRules(profile.toObject(), relationship);
+
+  res.json({
+    relationship,
+    profile: safeProfile
+  });
+};
+
+module.exports = { createOrUpdateProfile, getMyProfile, viewProfile };
