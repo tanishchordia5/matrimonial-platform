@@ -8,7 +8,7 @@ const messageSchema = new mongoose.Schema(
             required : true
         },
         text : {
-            type : string,
+            type : String,
             required : true
         }
     },
