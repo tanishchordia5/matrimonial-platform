@@ -43,21 +43,32 @@ const profileSchema = new mongoose.Schema(
     },
 
     visibilitySettings: {
-      showPhotos: { type: Boolean, default: true },
-      showContact: { type: Boolean, default: false }
+      showPhotosToMatchesOnly: {
+        type: Boolean,
+        default: true
+      },
+      showContactAfterMatch: {
+        type: Boolean,
+        default: true
+      },
+      showFamilyDetailsAfterMatch: {
+        type: Boolean,
+        default: true
+      }
     },
 
     completionPercentage: {
       type: Number,
       default: 0
     }
-    
+
+
   },
   { timestamps: true }
 );
 
 profileSchema.index({
-  "basicDetails.gender" : 1,
+  "basicDetails.gender": 1,
   "basicDetails.dateOfBirth": 1,
   "preferences.location": 1
 })
