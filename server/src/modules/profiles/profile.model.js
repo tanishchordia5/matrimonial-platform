@@ -56,6 +56,24 @@ const profileSchema = new mongoose.Schema(
         default: true
       }
     },
+    analytics: {
+      profileViews: {
+        type: Number,
+        default: 0
+      },
+      interestsReceived: {
+        type: Number,
+        default: 0
+      },
+      interestsAccepted: {
+        type: Number,
+        default: 0
+      },
+      lastActiveAt: {
+        type: Date,
+        default: Date.now
+      }
+    },
 
     completionPercentage: {
       type: Number,

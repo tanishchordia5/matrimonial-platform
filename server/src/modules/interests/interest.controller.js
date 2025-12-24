@@ -1,44 +1,53 @@
 const Interest = require("./interest.model");
 
-const sendInterest = async(req,res) => {
+const sendInterest = async (req, res) => {
 
-    const fromUserId = req.user.userId;
-    const {toUserId} = req.body;
-    const status = "PENDING"
+  const fromUserId = req.user.userId;
+  const { toUserId } = req.body;
 
-    if(fromUserId === toUserId){
-        return res.status(400).json({message : "Cannot Send Interest to Yourself"});
-    }
+  if (fromUserId === toUserId) {
+    return res.status(400).json({ message: "Cannot Send Interest to Yourself" });
+  }
 
-    console.log(fromUserId);
-    console.log(toUserId);
-    const interest = await Interest.create({
-        fromUserId,
-        toUserId
-    });
 
-    res.status(200).json({message : "Interest sent", interest});
+  const interest = await Interest.create({
+    fromUserId,
+    toUserId
+  });
+
+  await Profile.updateOne(
+    { userId: toUserId },
+    { $inc: { "analytics.interestsReceived": 1 } }
+  );
+  res.status(200).json({ message: "Interest sent", interest });
 };
 
 
-const respondToInterest = async(req,res) => {
-    const userId = req.user.userId;
-    const {interestId , action} = req.body; // Accept/Reject
+const respondToInterest = async (req, res) => {
+  const userId = req.user.userId;
+  const { interestId, action } = req.body; // Accept/Reject
 
-    const interest = await Interest.findById(interestId);
+  const interest = await Interest.findById(interestId);
 
-    if(!interest){
-        return res.status(404).json({message: "Interest not found"});
-    }
+  if (!interest) {
+    return res.status(404).json({ message: "Interest not found" });
+  }
 
-    if (interest.toUserId.toString() !== userId) {
-        return res.status(403).json({ message: "Not authorized" });
-    }
+  if (interest.toUserId.toString() !== userId) {
+    return res.status(403).json({ message: "Not authorized" });
+  }
 
-    interest.status = action === "ACCEPT" ? "ACCEPTED" : "REJECTED";
-    await interest.save();
+  interest.status = action === "ACCEPT" ? "ACCEPTED" : "REJECTED";
+  await interest.save();
 
-    res.json({ message: `Interest ${interest.status.toLowerCase()}` });
+  if (action === "ACCEPT") {
+    await Profile.updateOne(
+      { userId: interest.toUserId },
+      { $inc: { "analytics.interestsAccepted": 1 } }
+    );
+  }
+
+  res.json({ message: `Interest ${interest.status.toLowerCase()}` });
 
 }
 
