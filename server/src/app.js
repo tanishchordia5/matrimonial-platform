@@ -22,4 +22,13 @@ const errorHandler = require("./middlewares/error.middleware");
 
 app.use(errorHandler);
 
+const matchRoutes = require("./modules/match/match.routes");
+
+app.use("/api/match" , matchRoutes);
+
+const interestRoutes = require("./modules/interests/interest.routes");
+
+app.use("/api/interest", interestRoutes);
+
+
 module.exports = app;
